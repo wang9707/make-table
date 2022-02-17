@@ -1,0 +1,25 @@
+{
+  "name": "wang9707/make-table",
+  "description": "make crud",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "Wang9707\\MakeTable\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "wang9707",
+      "email": "1005945366@qq.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {},
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Wang9707\\MakeTable\\ServiceProvider"
+      ]
+    }
+  }
+}
