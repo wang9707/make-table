@@ -7,6 +7,10 @@
       "Wang9707\\MakeTable\\": "src/"
     }
   },
+  "require": {
+    "php": ">=8.0.0",
+    "laravel/framework": ">=5.5"
+  },
   "authors": [
     {
       "name": "wang9707",
