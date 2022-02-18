@@ -1,0 +1,86 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Filter\{{Model}}Filter;
+use App\Services\{{Model}}Service;
+use Exception;
+use Illuminate\Http\Request;
+use Wang9707\MakeTable\Exceptions\TipsException;
+use Wang9707\MakeTable\Response\Response;
+
+class {{Model}}Controller extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @param {{Model}}Filter $filter
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request, {{Model}}Filter $filter): \Illuminate\Http\Response
+    {
+        $data = {{Model}}Service::instance()->getResourceList($filter, $request);
+
+        return Response::success($data);
+    }
+
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     * @throws Exception
+     */
+    public function store(Request $request): \Illuminate\Http\Response
+    {
+        $data = $request->all();
+        {{Model}}Service::instance()->create($data);
+
+        return Response::success();
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(int $id): \Illuminate\Http\Response
+    {
+        $info = {{Model}}Service::instance()->getById($id);
+
+        return Response::success($info);
+    }
+
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, int $id): \Illuminate\Http\Response
+    {
+        $data = $request->all();
+        {{Model}}Service::instance()->updateById($id, $data);
+
+        return Response::success();
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     * @throws TipsException
+     */
+    public function destroy(int $id): \Illuminate\Http\Response
+    {
+        {{Model}}Service::instance()->deleteById($id);
+
+        return Response::success();
+    }
+}

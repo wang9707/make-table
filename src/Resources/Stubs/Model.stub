@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Wang9707\MakeTable\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+
+/**
+ * Class {{Model}}
+ * @package App\Models
+ *
+{{property}}
+ */
+class {{Model}} extends Model
+{
+    use HasFactory, SoftDeletes;
+
+    /**
+     * 该表将与模型关联
+     *
+     * @var string
+     */
+    protected $table = '{{table}}';
+
+    /**
+     * 执行模型是否自动维护时间戳
+     *
+     * @var bool
+     */
+    public $timestamps = true;
+
+    /**
+     * 日期转换
+     *
+     * @var string[]
+     */
+    protected $dates = [
+{{dates}}
+    ];
+
+    /**
+     * 属性转换
+     *
+     * @var array
+     */
+    protected $casts = [
+
+    ];
+
+    /**
+     * 可以被批量赋值的属性
+     *
+     * @var array
+     */
+    protected $fillable = [
+{{fillable}}
+    ];
+}
