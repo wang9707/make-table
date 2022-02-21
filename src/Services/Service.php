@@ -11,14 +11,14 @@ use Wang9707\MakeTable\Exceptions\TipsException;
 
 class Service
 {
-    private static $instances = [];
+    private static array $instances = [];
 
     /**
      * @var Model $model
      */
     public $model;
 
-    public static function instance()
+    public static function instance(): static
     {
         $name = static::class;
         if (!isset(self::$instances[$name])) {
