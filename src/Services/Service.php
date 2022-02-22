@@ -36,9 +36,11 @@ class Service
      */
     public function getResourceList(QueryFilter $filter, $request)
     {
-        $num = $request->input('num', 10);
+        $num     = $request->input('num', 10);
+        $orderBy = $request->input('order_by', 'id');
+        $sort    = $request->input('sort', 'desc');
 
-        $data = $this->model::query()->filter($filter)->orderBy('id', 'desc')->paginate($num);
+        $data = $this->model::query()->filter($filter)->orderBy($orderBy, $sort)->paginate($num);
 
         return [
             'list'         => $data->items(),
