@@ -1,5 +1,4 @@
 <?php
-
 namespace Wang9707\MakeTable\Console;
 
 use Illuminate\Console\Command;
@@ -8,7 +7,7 @@ use Illuminate\Support\Str;
 use Wang9707\MakeTable\Console\Traits\Make;
 use Wang9707\MakeTable\Table\Table;
 
-class MakeFilter extends Command
+class ShowAnnotate extends Command
 {
     use Make;
 
@@ -17,7 +16,7 @@ class MakeFilter extends Command
      *
      * @var string
      */
-    protected $signature = 'wang:make:filter
+    protected $signature = 'wang:show:annotate
                             {table : table name}';
 
     /**
@@ -25,7 +24,7 @@ class MakeFilter extends Command
      *
      * @var string
      */
-    protected $description = 'create filter';
+    protected $description = '查看注释';
 
     /**
      * Create a new command instance.
@@ -45,27 +44,20 @@ class MakeFilter extends Command
     {
         $table = $this->argument('table');
 
-        $db = Table::getDB();
-
+        $db    = Table::getDB();
         $model = Str::studly($table);
 
-        $savePath = (app_path("Models" . DIRECTORY_SEPARATOR . "Filter" . DIRECTORY_SEPARATOR . "{$model}Filter.php"));
-
-        $checkResult = $this->check($table, $savePath);
+        $checkResult = $this->checkTable($table);
         if (!$checkResult) {
             return;
         }
 
-        $file = file_get_contents(dirname(__FILE__) . '../../Resources/Stubs/Filter.stub');
-
         $arr = DB::select('SELECT * FROM information_schema.columns WHERE table_schema=? AND TABLE_NAME=?', [$db, $table]);
 
-        $file = strtr($file, [
-            '{{Model}}'  => $model,
-            '{{method}}' => $this->getMethod($arr),
-        ]);
+        $data = $this->annotate($arr);
 
-        $this->saveFile($savePath, $file);
+        $this->info($data);
+
     }
 
     /**
@@ -74,36 +66,41 @@ class MakeFilter extends Command
      * @param array $columns
      * @return string
      */
-    public function getMethod(array $columns)
+    public function annotate(array $columns)
     {
         $template = <<<TPL
-    /**
-     * 过滤{comment}
-     *
-     * @param \${method_name}
-     * @return mixed
-     */
-    public function {method_name}(\${method_name})
-    {
-        return \$this->builder->where('{column}', \${method_name});
-    }
-
-
+ * @property {type} {name}
 TPL;
 
         return collect($columns)->transform(function ($column) {
             return [
-                'method_name' => Str::camel(data_get($column, 'COLUMN_NAME')),
-                'column'      => data_get($column, 'COLUMN_NAME'),
-                'comment'     => data_get($column, 'COLUMN_COMMENT'),
+                'type' => data_get($column, 'DATA_TYPE'),
+                'name' => data_get($column, 'COLUMN_NAME'),
             ];
         })->transform(function ($column) use ($template) {
             return strtr($template, [
-                '{column}'      => $column['column'],
-                '{comment}'     => $column['comment'],
-                '{method_name}' => $column['method_name'],
+                '{type}' => $this->convertType($column['type']),
+                '{name}' => '$' . $column['name'],
             ]);
         })->implode(PHP_EOL);
     }
 
+    /**
+     * 文件类型转换
+     *
+     * @param string $type
+     */
+    public function convertType(string $type)
+    {
+        $type = strtoupper($type);
+
+        return match($type) {
+            'CHAR', 'VARCHAR', 'TINYBLOB', 'TINYTEXT', 'BLOB', 'TEXT', 'MEDIUMBLOB', 'MEDIUMTEXT', 'LONGBLOB', 'LONGTEXT' => 'string',
+            'DATE', 'TIME', 'YEAR', 'DATETIME', 'TIMESTAMP' => 'Carbon',
+            'TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'INTEGER', 'BIGINT' => 'int',
+            'FLOAT', 'DOUBLE', 'DECIMAL' => 'float',
+            'JSON' => 'array',
+        default=> 'string',
+        };
+    }
 }

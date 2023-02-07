@@ -1,5 +1,4 @@
 <?php
-
 namespace Wang9707\MakeTable\Console;
 
 use Illuminate\Console\Command;
@@ -8,7 +7,7 @@ use Illuminate\Support\Str;
 use Wang9707\MakeTable\Console\Traits\Make;
 use Wang9707\MakeTable\Table\Table;
 
-class MakeFilter extends Command
+class ShowFillable extends Command
 {
     use Make;
 
@@ -17,7 +16,7 @@ class MakeFilter extends Command
      *
      * @var string
      */
-    protected $signature = 'wang:make:filter
+    protected $signature = 'wang:show:fillable
                             {table : table name}';
 
     /**
@@ -25,7 +24,7 @@ class MakeFilter extends Command
      *
      * @var string
      */
-    protected $description = 'create filter';
+    protected $description = '查看 fillable';
 
     /**
      * Create a new command instance.
@@ -45,65 +44,46 @@ class MakeFilter extends Command
     {
         $table = $this->argument('table');
 
-        $db = Table::getDB();
-
+        $db    = Table::getDB();
         $model = Str::studly($table);
 
-        $savePath = (app_path("Models" . DIRECTORY_SEPARATOR . "Filter" . DIRECTORY_SEPARATOR . "{$model}Filter.php"));
-
-        $checkResult = $this->check($table, $savePath);
+        $checkResult = $this->checkTable($table);
         if (!$checkResult) {
             return;
         }
 
-        $file = file_get_contents(dirname(__FILE__) . '../../Resources/Stubs/Filter.stub');
-
         $arr = DB::select('SELECT * FROM information_schema.columns WHERE table_schema=? AND TABLE_NAME=?', [$db, $table]);
 
-        $file = strtr($file, [
-            '{{Model}}'  => $model,
-            '{{method}}' => $this->getMethod($arr),
-        ]);
+        $data = $this->getFillable($arr);
 
-        $this->saveFile($savePath, $file);
+        $this->info('[
+            ' . $data . ']');
+
     }
 
     /**
-     * 获取模型注释
+     * 获取模型的 fillable
      *
      * @param array $columns
      * @return string
      */
-    public function getMethod(array $columns)
+    public function getFillable(array $columns)
     {
         $template = <<<TPL
-    /**
-     * 过滤{comment}
-     *
-     * @param \${method_name}
-     * @return mixed
-     */
-    public function {method_name}(\${method_name})
-    {
-        return \$this->builder->where('{column}', \${method_name});
-    }
-
+'{column}', //{comment}
 
 TPL;
 
         return collect($columns)->transform(function ($column) {
             return [
-                'method_name' => Str::camel(data_get($column, 'COLUMN_NAME')),
-                'column'      => data_get($column, 'COLUMN_NAME'),
-                'comment'     => data_get($column, 'COLUMN_COMMENT'),
+                'column'  => data_get($column, 'COLUMN_NAME'),
+                'comment' => data_get($column, 'COLUMN_COMMENT'),
             ];
         })->transform(function ($column) use ($template) {
             return strtr($template, [
-                '{column}'      => $column['column'],
-                '{comment}'     => $column['comment'],
-                '{method_name}' => $column['method_name'],
+                '{column}'  => $column['column'],
+                '{comment}' => $column['comment'],
             ]);
         })->implode(PHP_EOL);
     }
-
 }

@@ -46,7 +46,7 @@ class {{Model}} extends Model
      * @var array
      */
     protected $casts = [
-
+{{casts}}
     ];
 
     /**

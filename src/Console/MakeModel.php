@@ -3,11 +3,10 @@
 namespace Wang9707\MakeTable\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Wang9707\MakeTable\Console\Traits\Make;
-use  Wang9707\MakeTable\Table\Table;
+use Wang9707\MakeTable\Table\Table;
 
 class MakeModel extends Command
 {
@@ -38,7 +37,6 @@ class MakeModel extends Command
         parent::__construct();
     }
 
-
     /**
      * Execute the console command.
      *
@@ -50,7 +48,7 @@ class MakeModel extends Command
         $db    = Table::getDB();
         $model = Str::studly($table);
 
-        $savePath = app_path("Models\\{$model}.php");
+        $savePath = app_path("Models" . DIRECTORY_SEPARATOR . "{$model}.php");
 
         $checkResult = $this->check($table, $savePath);
         if (!$checkResult) {
@@ -67,11 +65,11 @@ class MakeModel extends Command
             '{{table}}'    => $table,
             '{{dates}}'    => $this->getDattes($arr),
             '{{fillable}}' => $this->getFillable($arr),
+            '{{casts}}'    => $this->getCasts($arr),
         ]);
 
         $this->saveFile($savePath, $file);
     }
-
 
     /**
      * 获取模型的 fillable
@@ -138,6 +136,25 @@ TPL;
         return collect($columns)->transform(function ($column) {
 
             if ($this->convertType(data_get($column, 'DATA_TYPE')) == 'Carbon') {
+                return [
+                    'name' => data_get($column, 'COLUMN_NAME'),
+                ];
+            }
+        })->filter()->transform(function ($column) use ($template) {
+            return strtr($template, [
+                '{column}' => $column['name'],
+            ]);
+        })->implode(PHP_EOL);
+    }
+
+    public function getCasts(array $columns)
+    {
+        $template = <<<TPL
+         '{column}' => 'array',
+TPL;
+        return collect($columns)->transform(function ($column) {
+
+            if ($this->convertType(data_get($column, 'DATA_TYPE')) == 'array') {
                 return [
                     'name' => data_get($column, 'COLUMN_NAME'),
                 ];

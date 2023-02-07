@@ -34,13 +34,13 @@ class Service
      * @param $request
      * @return mixed
      */
-    public function getResourceList(QueryFilter $filter, $request)
+    public function getResourceList(QueryFilter $filter, $request, array $with = [])
     {
         $num     = $request->input('num', 10);
         $orderBy = $request->input('order_by', 'id');
         $sort    = $request->input('sort', 'desc');
 
-        $data = $this->model::query()->filter($filter)->orderBy($orderBy, $sort)->paginate($num);
+        $data = $this->model::with($with)->filter($filter)->orderBy($orderBy, $sort)->paginate($num);
 
         return [
             'list'         => $data->items(),

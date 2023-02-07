@@ -3,11 +3,9 @@
 namespace Wang9707\MakeTable\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Wang9707\MakeTable\Console\Traits\Make;
-use  Wang9707\MakeTable\Table\Table;
+use Wang9707\MakeTable\Table\Table;
 
 class MakeController extends Command
 {
@@ -50,14 +48,14 @@ class MakeController extends Command
 
         $model = Str::studly($table);
 
-        $savePath = (app_path("Http\\Controllers\\{$model}Controller.php"));
+        $savePath = (app_path("Http" . DIRECTORY_SEPARATOR . "Controllers" . DIRECTORY_SEPARATOR . "{$model}Controller.php"));
 
         $checkResult = $this->check($table, $savePath);
         if (!$checkResult) {
             return;
         }
 
-        $file = file_get_contents(dirname(__FILE__) . '../../resources/stubs/Controller.stub');
+        $file = file_get_contents(dirname(__FILE__) . '../../Resources/Stubs/Controller.stub');
 
         $file = strtr($file, [
             '{{Model}}' => $model,
@@ -65,6 +63,5 @@ class MakeController extends Command
 
         $this->saveFile($savePath, $file);
     }
-
 
 }

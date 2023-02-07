@@ -20,7 +20,7 @@ class {{Model}}Controller extends Controller
      */
     public function index(Request $request, {{Model}}Filter $filter): \Illuminate\Http\Response
     {
-        $data = {{Model}}Service::instance()->getResourceList($filter, $request);
+        $data = {{Model}}Service::instance()->getResourceList($filter, $request, []);
 
         return Response::success($data);
     }
