@@ -3,12 +3,7 @@
 namespace Wang9707\MakeTable\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Wang9707\MakeTable\Console\Traits\Make;
-use  Wang9707\MakeTable\Table\Table;
 
 class MakeAll extends Command
 {
@@ -20,39 +15,32 @@ class MakeAll extends Command
      * @var string
      */
     protected $signature = 'wang:make:all
-                            {table : table name}';
+                            {table : table name or model class}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'create filter';
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+    protected $description = 'create model, request, controller, service and filter';
 
     /**
      * Execute the console command.
      *
+     * @return void
      */
     public function handle()
     {
         $table = $this->argument('table');
-        $this->checkTable($table);
 
+        if (!$this->checkTable($table)) {
+            return;
+        }
 
         $this->call('wang:make:model', ['table' => $table]);
+        $this->call('wang:make:request', ['table' => $table]);
         $this->call('wang:make:controller', ['table' => $table]);
         $this->call('wang:make:service', ['table' => $table]);
         $this->call('wang:make:filter', ['table' => $table]);
     }
-
 }

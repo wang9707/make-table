@@ -1,6 +1,6 @@
 <?php
 
-namespace Wang9707\MakeTable\Response;
+namespace Wang9707\MakeTable\Support;
 
 
 class Response

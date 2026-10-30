@@ -1,26 +1,26 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace {{controllerNamespace}};
 
-use App\Models\Filter\{{Model}}Filter;
-use App\Services\{{Model}}Service;
-use Exception;
+use {{filterFqcn}};
+use {{requestFqcn}};
+use {{serviceFqcn}};
 use Illuminate\Http\Request;
 use Wang9707\MakeTable\Exceptions\TipsException;
-use Wang9707\MakeTable\Response\Response;
+use Wang9707\MakeTable\Support\Response;
 
-class {{Model}}Controller extends Controller
+class {{model}}Controller extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @param {{Model}}Filter $filter
+     * @param {{model}}Filter $filter
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, {{Model}}Filter $filter): \Illuminate\Http\Response
+    public function index(Request $request, {{model}}Filter $filter): \Illuminate\Http\Response
     {
-        $data = {{Model}}Service::instance()->getResourceList($filter, $request, []);
+        $data = {{model}}Service::instance()->getResourceList($filter, $request, []);
 
         return Response::success($data);
     }
@@ -29,14 +29,13 @@ class {{Model}}Controller extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param {{model}}Request $request
      * @return \Illuminate\Http\Response
-     * @throws Exception
      */
-    public function store(Request $request): \Illuminate\Http\Response
+    public function store({{model}}Request $request): \Illuminate\Http\Response
     {
         $data = $request->all();
-        {{Model}}Service::instance()->create($data);
+        {{model}}Service::instance()->create($data);
 
         return Response::success();
     }
@@ -49,7 +48,7 @@ class {{Model}}Controller extends Controller
      */
     public function show(int $id): \Illuminate\Http\Response
     {
-        $info = {{Model}}Service::instance()->getById($id);
+        $info = {{model}}Service::instance()->getById($id);
 
         return Response::success($info);
     }
@@ -58,14 +57,14 @@ class {{Model}}Controller extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param {{model}}Request $request
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, int $id): \Illuminate\Http\Response
+    public function update({{model}}Request $request, int $id): \Illuminate\Http\Response
     {
         $data = $request->all();
-        {{Model}}Service::instance()->updateById($id, $data);
+        {{model}}Service::instance()->updateById($id, $data);
 
         return Response::success();
     }
@@ -79,7 +78,7 @@ class {{Model}}Controller extends Controller
      */
     public function destroy(int $id): \Illuminate\Http\Response
     {
-        {{Model}}Service::instance()->deleteById($id);
+        {{model}}Service::instance()->deleteById($id);
 
         return Response::success();
     }

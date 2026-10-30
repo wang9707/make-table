@@ -1,0 +1,10 @@
+<?php
+
+namespace {{filterNamespace}};
+
+
+use Wang9707\MakeTable\Eloquent\QueryFilter;
+{{filterUse}}{{carbonUse}}
+class {{model}}Filter extends QueryFilter
+{
+{{body}}}

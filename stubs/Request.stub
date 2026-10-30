@@ -1,0 +1,30 @@
+<?php
+
+namespace {{requestNamespace}};
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class {{model}}Request extends FormRequest
+{
+    /**
+     * 是否通过授权
+     *
+     * @return bool
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * 验证规则
+     *
+     * @return array
+     */
+    public function rules(): array
+    {
+        return [
+{{rules}}
+        ];
+    }
+}

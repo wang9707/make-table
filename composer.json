@@ -1,7 +1,9 @@
 {
   "name": "wang9707/make-table",
-  "description": "make crud",
+  "description": "Laravel CRUD generator based on database tables",
+  "keywords": ["laravel", "crud", "generator", "scaffold"],
   "type": "library",
+  "license": "MIT",
   "autoload": {
     "psr-4": {
       "Wang9707\\MakeTable\\": "src/"
@@ -9,7 +11,19 @@
   },
   "require": {
     "php": ">=8.0.0",
-    "laravel/framework": ">=5.5"
+    "laravel/framework": "^8.0|^9.0|^10.0|^11.0|^12.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^10.0",
+    "phpunit/phpunit": "^11.0"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Wang9707\\MakeTable\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
   },
   "authors": [
     {
@@ -17,12 +31,10 @@
       "email": "1005945366@qq.com"
     }
   ],
-  "minimum-stability": "dev",
-  "require": {},
   "extra": {
     "laravel": {
       "providers": [
-        "Wang9707\\MakeTable\\ServiceProvider"
+        "Wang9707\\MakeTable\\MakeTableServiceProvider"
       ]
     }
   }

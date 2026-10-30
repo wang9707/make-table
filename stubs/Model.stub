@@ -1,21 +1,22 @@
 <?php
 
-namespace App\Models;
+namespace {{modelNamespace}};
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Wang9707\MakeTable\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-
+{{softDeletesUse}}
 /**
- * Class {{Model}}
- * @package App\Models
+ * Class {{model}}
+ * @package {{modelNamespace}}
  *
 {{property}}
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<{{model}}> filter(\Wang9707\MakeTable\Eloquent\QueryFilter $filter)
  */
-class {{Model}} extends Model
+class {{model}} extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory{{softDeletes}};
 
     /**
      * 该表将与模型关联
@@ -30,15 +31,6 @@ class {{Model}} extends Model
      * @var bool
      */
     public $timestamps = true;
-
-    /**
-     * 日期转换
-     *
-     * @var string[]
-     */
-    protected $dates = [
-{{dates}}
-    ];
 
     /**
      * 属性转换

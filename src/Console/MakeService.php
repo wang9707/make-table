@@ -3,9 +3,8 @@
 namespace Wang9707\MakeTable\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use Wang9707\MakeTable\Console\Traits\Make;
-use Wang9707\MakeTable\Table\Table;
+use Wang9707\MakeTable\Support\Table;
 
 class MakeService extends Command
 {
@@ -17,7 +16,7 @@ class MakeService extends Command
      * @var string
      */
     protected $signature = 'wang:make:service
-                            {table : table name}';
+                            {table : table name or model class}';
 
     /**
      * The console command description.
@@ -27,41 +26,27 @@ class MakeService extends Command
     protected $description = 'create service';
 
     /**
-     * Create a new command instance.
+     * Execute the console command.
      *
      * @return void
      */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     */
     public function handle()
     {
-        $table = $this->argument('table');
+        $target = $this->resolveTarget($this->argument('table'));
 
-        $db = Table::getDB();
+        $model    = $this->modelName($target);
+        $savePath = $this->pathFor('service') . DIRECTORY_SEPARATOR . "{$model}Service.php";
 
-        $model = Str::studly($table);
-
-        $savePath = (app_path("Services" . DIRECTORY_SEPARATOR . "{$model}Service.php"));
-
-        $checkResult = $this->check($table, $savePath);
-        if (!$checkResult) {
+        if (!$this->check($target, $savePath)) {
             return;
         }
 
-        $file = file_get_contents(dirname(__FILE__) . '../../Resources/Stubs/Service.stub');
-
-        $file = strtr($file, [
-            '{{Model}}' => $model,
+        $file = strtr($this->stub('Service'), [
+            '{{serviceNamespace}}' => $this->namespaceFor('service'),
+            '{{model}}'            => $model,
+            '{{modelFqcn}}'        => $this->fqcn('model', $model),
         ]);
 
         $this->saveFile($savePath, $file);
     }
-
 }

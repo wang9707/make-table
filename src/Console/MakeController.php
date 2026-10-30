@@ -3,9 +3,8 @@
 namespace Wang9707\MakeTable\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use Wang9707\MakeTable\Console\Traits\Make;
-use Wang9707\MakeTable\Table\Table;
+use Wang9707\MakeTable\Support\Table;
 
 class MakeController extends Command
 {
@@ -17,7 +16,7 @@ class MakeController extends Command
      * @var string
      */
     protected $signature = 'wang:make:controller
-                            {table : table name}';
+                            {table : table name or model class}';
 
     /**
      * The console command description.
@@ -27,41 +26,29 @@ class MakeController extends Command
     protected $description = 'create controller';
 
     /**
-     * Create a new command instance.
+     * Execute the console command.
      *
      * @return void
      */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     */
     public function handle()
     {
-        $table = $this->argument('table');
+        $target = $this->resolveTarget($this->argument('table'));
 
-        $db = Table::getDB();
+        $model    = $this->modelName($target);
+        $savePath = $this->pathFor('controller') . DIRECTORY_SEPARATOR . "{$model}Controller.php";
 
-        $model = Str::studly($table);
-
-        $savePath = (app_path("Http" . DIRECTORY_SEPARATOR . "Controllers" . DIRECTORY_SEPARATOR . "{$model}Controller.php"));
-
-        $checkResult = $this->check($table, $savePath);
-        if (!$checkResult) {
+        if (!$this->check($target, $savePath)) {
             return;
         }
 
-        $file = file_get_contents(dirname(__FILE__) . '../../Resources/Stubs/Controller.stub');
-
-        $file = strtr($file, [
-            '{{Model}}' => $model,
+        $file = strtr($this->stub('Controller'), [
+            '{{controllerNamespace}}' => $this->namespaceFor('controller'),
+            '{{model}}'               => $model,
+            '{{filterFqcn}}'          => $this->fqcn('filter', $model . 'Filter'),
+            '{{requestFqcn}}'         => $this->fqcn('request', $model . 'Request'),
+            '{{serviceFqcn}}'         => $this->fqcn('service', $model . 'Service'),
         ]);
 
         $this->saveFile($savePath, $file);
     }
-
 }

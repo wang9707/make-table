@@ -1,0 +1,14 @@
+<?php
+
+namespace {{serviceNamespace}};
+
+use Wang9707\MakeTable\Services\Service;
+
+
+/**
+ * @extends Service<\{{modelFqcn}}>
+ */
+class {{model}}Service extends Service
+{
+    public $model = \{{modelFqcn}}::class;
+}
